@@ -13,6 +13,7 @@ html, body {
     font-size: 150%;
     color: white;
     margin: 2%;
+    scroll-behavior: smooth;
 
 }
 
@@ -23,11 +24,7 @@ html, body {
     
 }
 
-.card-title {
-
-    margin: 2%;
-
-}
+.card-title { margin: 2%; }
 
 .btn {
 
@@ -40,6 +37,7 @@ html, body {
     font-size: 105%;
     background-color: var(--darker-color);
     border: var(--background-color);
+    outline: none;
 
 }
 
@@ -47,22 +45,41 @@ html, body {
 
     margin: 1%;
     padding: 1%;
-    height: 450px;
+    height: 600px;
     font-size: 45%;
     background-color: black;
     border-radius: 20px;
+    overflow-y: scroll;
 
 }
 
-#predictionResult {
+.command-log {
 
-    text-align: center;
+    margin: 1.5%;
+    font-size: 100%;
+    background-color: black;
+    width: 85%;
 
 }
+
+.command-input {
+
+    background-color: black;
+    color: white;
+    outline: none;
+    margin-left: 0.5%;
+    font-family: var(--font);
+    font-size: 98%;
+    border: none;
+    width: 85%;
+
+}
+
+#predictionResult { text-align: center; }
 
 .success-log { color: rgb(29, 252, 29); margin-left: 1.5%; }
 
-.loading-log { color: rgb(233, 233, 233); margin-left: 1.5%; }
+.normal-log { color: rgb(233, 233, 233); margin-left: 1.5%; }
 
 .prediction-canvas {
 
@@ -85,3 +102,11 @@ html, body {
 .success { border-color: rgb(90, 255, 115); }
 
 .fail { border-color: rgb(255, 64, 150); }
+
+::-webkit-scrollbar { width: 10px; }
+  
+::-webkit-scrollbar-track { background: var(--background-color); }
+  
+::-webkit-scrollbar-thumb { background: var(--darker-color); }
+  
+::-webkit-scrollbar-thumb:hover { background: #555; }

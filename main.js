@@ -1,13 +1,16 @@
 // import '../node_modules/bootstrap/dist/css/bootstrap.css';
 // import * as tf from '../node_modules/@tensorflow/tfjs';
+// import { input } from '@tensorflow/tfjs';
 import { MnistData } from './data.js';
-
-
-console.log(tf.sequential())
 
 console.log("main script loaded...");
 
 var model, runs = 0, succ = 0;
+let data;
+
+ // 150 batches of 64 samples each - default
+ let BATCH_SIZE = 64;
+ let TRAIN_BATCHES = 150;
 
 function logMessage (message) {
 
@@ -15,8 +18,113 @@ function logMessage (message) {
     var mess = document.createElement("p");
     mess.innerHTML = " > " + message;
     if (message.includes("!")) { mess.className = "success-log"; }
-    else if (message.includes("...")) { mess.className = "loading-log"; }
+    else { mess.className = "normal-log"; }
     document.getElementById("log").appendChild(mess);
+
+}
+
+function runCommand (command) {
+
+    if (command == ("help") || (command == ("?"))) {
+        
+        return "available commands: <br>&nbsp&nbsp[run &ltnumber of simulations&gt] - runs n simulations" +
+                                    "<br>&nbsp&nbsp[restart &ltbatch size&gt, &ltnumber of batches&gt] - recreates & retrains model with set parameters" +
+                                    "<br>&nbsp&nbsp[refresh] - clears stats" + 
+                                    "<br>&nbsp&nbsp[clear] - clears result cards" +
+                                    "<br>&nbsp&nbsp[help] - help" +
+                                    "<br> enter a command to continue...";
+    
+    }
+
+    if (command.includes("run")) {
+
+        for (var r = 0; r < command.substring(command.indexOf("run") + 4); r++) { simulate(); }
+        return "ran " + parseInt(command.substring(command.indexOf("run") + 4)) + " simulations...";
+
+    }
+
+    if (command.includes("stats")) {
+
+        return "runs: " + runs +
+               "<br>&nbsp&nbspsuccesses: " + succ +
+               "<br>&nbsp&nbspsuccess rate: " + successRate() + "%" +
+               "<br>&nbsp&nbsprating: " + rating(successRate());
+
+    }
+
+    if (command.includes("restart")) {
+
+        BATCH_SIZE = parseInt(command.substring(command.indexOf("restart") + 8, command.indexOf(",")));
+        TRAIN_BATCHES = parseInt(command.substring(command.indexOf(",") + 2));
+        main();
+        return "recreating model with " + TRAIN_BATCHES + " batches of size " + BATCH_SIZE + "...";
+
+    }
+
+    if (command == ("refresh")) {
+        
+        runs = 0; succ = 0;
+        document.getElementById("predictionResults").innerHTML = "results";
+        return "refreshed stats...";
+    
+    }
+
+    if (command == ("clear")) {
+        
+        document.getElementById("predictionResult").innerHTML = "";
+        return "cleared result cards...";
+    
+    }
+
+    return "unknown command: " + command + "<br> enter 'help' for lost of available commands";
+
+}
+
+function awaitCommand () {
+
+    var symb = document.createElement("p");
+    symb.className = "command-log";
+    symb.innerHTML = ">";
+
+    var inp = document.createElement("input");
+    inp.className = "command-input";
+    inp.addEventListener("keydown", function (e) {
+
+        if (e.key === "Enter") {
+
+            logMessage(runCommand(inp.value));
+            inp.disabled = true;
+            awaitCommand();
+
+        }
+
+    });
+    symb.appendChild(inp);
+    document.getElementById("log").appendChild(symb);
+    inp.focus();
+
+}
+
+function successRate () {
+
+    return !runs > 0 ? "--" : ((succ / runs) * 100).toFixed(2);
+
+}
+
+function rating (rate) {
+
+    switch (true) {
+        
+        case (rate < 50): return "bad";
+        case (rate < 60): return "poor";
+        case (rate < 70): return "useless";
+        case (rate < 80): return "average";
+        case (rate < 90): return "good";
+        case (rate < 99): return "great";
+        case (rate == 100): return "perfect!";
+        default: return "--";
+
+    }
 
 }
 
@@ -88,8 +196,6 @@ function create () {
 
 }
 
-let data;
-
 async function load () {
 
     logMessage("loading mnist data...");
@@ -99,13 +205,9 @@ async function load () {
 
 }
 
- // 150 batches of 64 samples each
-const BATCH_SIZE = 64;
-const TRAIN_BATCHES = 150;
-
 async function train () {
 
-    logMessage("started training model...");
+    logMessage("started training model... [" + TRAIN_BATCHES + " batches of " + BATCH_SIZE + " samples each]");
 
     for (let b = 0; b < TRAIN_BATCHES; b++) {
 
@@ -128,7 +230,9 @@ async function train () {
     }
 
     logMessage("model trained!");
-    logMessage("press button to generate simulation...");
+    logMessage("press button or run command to generate simulations...");
+
+    awaitCommand();
 
 }
 
@@ -175,6 +279,17 @@ async function predict (batch) {
 
 }
 
+async function simulate () {
+
+    runs++;
+
+    const batch = data.nextTestBatch(1);
+    await predict(batch);
+    document.getElementById("predictionResults").innerHTML = "results [" + runs + " samples, " + successRate() + "% success rate]";
+
+
+}
+
 function draw (image, canvas) {
 
     const [width, height] = [28, 28];
@@ -199,11 +314,7 @@ function draw (image, canvas) {
 
 document.getElementById("selectTestDataButton").addEventListener('click', async (el, ev) => {
 
-    runs++;
-
-    const batch = data.nextTestBatch(1);
-    await predict(batch);
-    document.getElementById("predictionResults").innerHTML = "results [" + runs + " samples, " + ((succ / runs) * 100).toFixed(2) + "% success rate]";
+    simulate();
 
 });
 
