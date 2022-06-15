@@ -1,0 +1,87 @@
+:root {
+
+    --background-color: #202020;
+    --darker-color: #121212;
+    --font: 'Roboto Mono', monospace;
+
+}
+
+html, body {
+
+    background-color: var(--background-color);
+    font-family: var(--font);
+    font-size: 150%;
+    color: white;
+    margin: 2%;
+
+}
+
+.card-header {
+
+    margin-left: -2%;
+    margin-top: -2%;
+    
+}
+
+.card-title {
+
+    margin: 2%;
+
+}
+
+.btn {
+
+    position: fixed;
+    right: 2%;
+    width: 5%;
+    height: 10%;
+    bottom: 3%;
+    border-radius: 20%;
+    font-size: 105%;
+    background-color: var(--darker-color);
+    border: var(--background-color);
+
+}
+
+#log {
+
+    margin: 1%;
+    padding: 1%;
+    height: 450px;
+    font-size: 45%;
+    background-color: black;
+    border-radius: 20px;
+
+}
+
+#predictionResult {
+
+    text-align: center;
+
+}
+
+.success-log { color: rgb(29, 252, 29); margin-left: 1.5%; }
+
+.loading-log { color: rgb(233, 233, 233); margin-left: 1.5%; }
+
+.prediction-canvas {
+
+    border-style: solid;
+    border-radius: 10px;
+    margin-left: 30px;
+
+}
+
+.prediction-div {
+
+    background-color: var(--darker-color);
+    border-radius: 15px;
+    padding: 2%;
+    font-size: 50%;
+    text-align: center
+
+}
+
+.success { border-color: rgb(90, 255, 115); }
+
+.fail { border-color: rgb(255, 64, 150); }
