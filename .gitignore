@@ -1,1 +1,4 @@
 .vscode
+.babelrc
+package.json
+package-lock.json

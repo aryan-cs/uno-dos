@@ -55,7 +55,7 @@ function runCommand (command) {
 
     if (command.includes("recreate")) {
 
-        BATCH_SIZE = parseInt(command.substring(command.indexOf("restart") + 8, command.indexOf(",")));
+        BATCH_SIZE = parseInt(command.substring(command.indexOf("recreate") + 8, command.indexOf(",")));
         TRAIN_BATCHES = parseInt(command.substring(command.indexOf(",") + 2));
         main();
         return "recreating model with " + TRAIN_BATCHES + " batches of size " + BATCH_SIZE + "...";
