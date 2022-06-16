@@ -1,4 +1,4 @@
 .vscode
-.babelrc
-package.json
-package-lock.json
+*.babelrc
+*.json
+.gitignore
