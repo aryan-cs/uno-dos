@@ -41,15 +41,68 @@ html, body {
 
 }
 
+#canvas {
+
+    border: 8px solid var(--darker-color);
+    border-radius: 20px;
+    z-index: 7;
+    position: absolute;
+    left: 75%;
+    top: 35%;
+
+}
+
+#canvasimg {
+
+    width: 280;
+    height: 280;
+    display: none;
+
+}
+
+#clearButton {
+
+    z-index: 10;
+    position: absolute;
+    left: 75%;
+    top: 66%;
+    width: 65px;
+    height: 65px;
+    border-radius: 20%;
+    font-size: 50%;
+    background-color: var(--darker-color);
+    border: var(--background-color);
+    outline: none;
+
+}
+
+#identifyButton {
+
+    z-index: 10;
+    position: absolute;
+    left: 87%;
+    top: 66%;
+    width: 65px;
+    height: 65px;
+    border-radius: 20%;
+    font-size: 50%;
+    background-color: var(--darker-color);
+    border: var(--background-color);
+    outline: none;
+
+}
+
 #log {
 
     margin: 1%;
     padding: 1%;
+    width: 1100px;
     height: 600px;
     font-size: 45%;
-    background-color: black;
     border-radius: 20px;
-    overflow-y: scroll;
+    background-color: black;
+    display: list-item;
+    overflow-y: auto;
 
 }
 
@@ -89,13 +142,22 @@ html, body {
 
 }
 
+.custom {
+
+    transform: translateY(-8.9%);
+
+}
+
 .prediction-div {
 
     background-color: var(--darker-color);
     border-radius: 15px;
-    padding: 2%;
+    padding: 1%;
+    
     font-size: 50%;
-    text-align: center
+    text-align: center;
+    height: 250px;
+    width: 200px;
 
 }
 

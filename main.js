@@ -5,8 +5,9 @@ import { MnistData } from './data.js';
 
 console.log("main script loaded...");
 
-var model, runs = 0, succ = 0;
-let data;
+var model, runs = 0, succ = 0, canvas, rawImage, ctx, data, trained = false;
+var identifyButton, clearButton;
+var pos = { x: 0, y: 0 };
 
  // 150 batches of 64 samples each - default
  let BATCH_SIZE = 64;
@@ -28,7 +29,7 @@ function runCommand (command) {
     if (command == ("help") || (command == ("?"))) {
         
         return "available commands: <br>&nbsp&nbsp[run &ltnumber of simulations&gt] - runs n simulations" +
-                                    "<br>&nbsp&nbsp[restart &ltbatch size&gt, &ltnumber of batches&gt] - recreates & retrains model with set parameters" +
+                                    "<br>&nbsp&nbsp[recreate &ltbatch size&gt, &ltnumber of batches&gt] - recreates & retrains model with set parameters" +
                                     "<br>&nbsp&nbsp[refresh] - clears stats" + 
                                     "<br>&nbsp&nbsp[clear] - clears result cards" +
                                     "<br>&nbsp&nbsp[help] - help" +
@@ -52,7 +53,7 @@ function runCommand (command) {
 
     }
 
-    if (command.includes("restart")) {
+    if (command.includes("recreate")) {
 
         BATCH_SIZE = parseInt(command.substring(command.indexOf("restart") + 8, command.indexOf(",")));
         TRAIN_BATCHES = parseInt(command.substring(command.indexOf(",") + 2));
@@ -229,7 +230,7 @@ async function train () {
 
     }
 
-    logMessage("model trained!");
+    logMessage("model trained!"); trained = true;
     logMessage("press button or run command to generate simulations...");
 
     awaitCommand();
@@ -238,11 +239,13 @@ async function train () {
 
 async function main () {
 
+    init();
     create();
     await load();
     await train();
     document.getElementById("selectTestDataButton").disabled = false;
-    document.getElementById("selectTestDataButton").innerText = "🧠";
+    clearButton.disabled = false;
+    identifyButton.disabled = false;
 
 }
 
@@ -312,10 +315,82 @@ function draw (image, canvas) {
 
 }
 
-document.getElementById("selectTestDataButton").addEventListener('click', async (el, ev) => {
+document.getElementById("selectTestDataButton").addEventListener('click', async (el, ev) => { simulate(); });
 
-    simulate();
+function setPosition (e){
 
-});
+	pos.x = e.clientX - canvas.getBoundingClientRect().left;
+	pos.y = e.clientY - canvas.getBoundingClientRect().top;
+
+}
+    
+function write (e) {
+
+	if (e.buttons != 1) return;
+
+    if (trained) {
+
+        ctx.beginPath();
+        ctx.lineWidth = 20;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "white";
+        ctx.moveTo(pos.x, pos.y);
+        setPosition(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+        
+        rawImage.src = canvas.toDataURL("image/png");
+
+    }
+
+}
+
+function erase() { ctx.fillStyle = "black"; ctx.fillRect(0, 0, 280, 280); }
+    
+function save() {
+
+    console.log("saving...");
+
+    // get raw image, resize to 28x28, expand to 1D
+    var prediction = model.predict(tf.image.resizeBilinear(tf.browser.fromPixels(rawImage, 1), [28,28]).expandDims(0));
+
+    // get prediction value
+    var pred = tf.argMax(prediction, 1).dataSync();
+
+    const div = document.createElement("div");
+    div.className = "prediction-div custom";
+
+    const img = document.createElement("img");
+    img.className = "prediction-canvas";
+    img.src = rawImage.src;
+
+    const label = document.createElement("div");
+    label.innerHTML = "predicted value: " + pred;
+    label.innerHTML += "<br>custom drawing";
+
+    div.appendChild(img);
+    div.appendChild(label);
+    document.getElementById("predictionResult").appendChild(div);
+    
+}
+
+function init() {
+
+	canvas = document.getElementById('canvas');
+	rawImage = document.getElementById('canvasimg');
+
+	ctx = canvas.getContext("2d");
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, 280, 280);
+	canvas.addEventListener("mousemove", write);
+	canvas.addEventListener("mousedown", setPosition);
+	canvas.addEventListener("mouseenter", setPosition);
+
+	identifyButton = document.getElementById("identifyButton");
+	identifyButton.addEventListener("click", save);
+	clearButton = document.getElementById("clearButton");
+	clearButton.addEventListener("click", erase);
+
+}
 
 main();
