@@ -1,6 +1,3 @@
-// import '../node_modules/bootstrap/dist/css/bootstrap.css';
-// import * as tf from '../node_modules/@tensorflow/tfjs';
-// import { input } from '@tensorflow/tfjs';
 import { MnistData } from './data.js';
 
 console.log("main script loaded...");
@@ -9,9 +6,10 @@ var model, runs = 0, succ = 0, canvas, rawImage, ctx, data, trained = false;
 var identifyButton, clearButton;
 var pos = { x: 0, y: 0 };
 
- // 150 batches of 64 samples each - default
- let BATCH_SIZE = 64;
- let TRAIN_BATCHES = 150;
+let BATCH_SIZE = 512;
+let TRAIN_BATCHES = 4000;
+
+let regexp = /android|iphone|kindle|ipad/i;
 
 function logMessage (message) {
 
@@ -39,8 +37,11 @@ function runCommand (command) {
 
     if (command.includes("run")) {
 
+        const start = Date.now();
         for (var r = 0; r < command.substring(command.indexOf("run") + 4); r++) { simulate(); }
-        return "ran " + parseInt(command.substring(command.indexOf("run") + 4)) + " simulations...";
+        const duration = Date.now() - start;
+
+        return "ran " + parseInt(command.substring(command.indexOf("run") + 4)) + " simulations... [" + duration + " ms]";
 
     }
 
@@ -62,7 +63,7 @@ function runCommand (command) {
 
     }
 
-    if (command == ("refresh")) {
+    if (command.includes("refresh")) {
         
         runs = 0; succ = 0;
         document.getElementById("predictionResults").innerHTML = "results";
@@ -70,7 +71,7 @@ function runCommand (command) {
     
     }
 
-    if (command == ("clear")) {
+    if (command.includes("clear")) {
         
         document.getElementById("predictionResult").innerHTML = "";
         return "cleared result cards...";
@@ -210,9 +211,11 @@ async function train () {
 
     logMessage("started training model... [" + TRAIN_BATCHES + " batches of " + BATCH_SIZE + " samples each]");
 
+    const start = Date.now();
+
     for (let b = 0; b < TRAIN_BATCHES; b++) {
 
-        console.log("batch " + b);
+        logMessage("training batch " + (b + 1) + " of " + TRAIN_BATCHES + "...");
 
         const batch = tf.tidy(() => {
 
@@ -230,7 +233,9 @@ async function train () {
 
     }
 
-    logMessage("model trained!"); trained = true;
+    const duration = Date.now() - start;
+
+    logMessage("model trained! [" + duration + " ms]"); trained = true;
     logMessage("press button or run command to generate simulations...");
 
     awaitCommand();
@@ -239,6 +244,8 @@ async function train () {
 
 async function main () {
 
+    if (!regexp.test(navigator.userAgent)) {
+
     init();
     create();
     await load();
@@ -246,6 +253,15 @@ async function main () {
     document.getElementById("selectTestDataButton").disabled = false;
     clearButton.disabled = false;
     identifyButton.disabled = false;
+
+    }
+
+    else {
+        
+        logMessage("please use a desktop browser, mobile devices cannopt handle the processes required for this program...");
+        logMessage("thank you for your understanding, good bye!");
+    
+    }
 
 }
 
