@@ -6,8 +6,8 @@ var model, runs = 0, succ = 0, canvas, rawImage, ctx, data, trained = false;
 var identifyButton, clearButton;
 var pos = { x: 0, y: 0 };
 
-let BATCH_SIZE = 512;
-let TRAIN_BATCHES = 4000;
+let BATCH_SIZE = 64;
+let TRAIN_BATCHES = 150;
 
 let regexp = /android|iphone|kindle|ipad/i;
 
